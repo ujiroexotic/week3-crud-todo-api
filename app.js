@@ -12,9 +12,27 @@ app.get('/todos', (req, res) => {
   res.status(200).json(todos); // Send array as JSON
 });
 
+// Bonus: GET Active
+app.get('/todos/active', (req, res) => {
+  const activeTodos = todos.filter((todo) => !todo.completed);
+  res.status(200).json(activeTodos);
+});
+
+// GET One – Single Read
+app.get('/todos/:id', (req, res) => {
+  const todo = todos.find((t) => t.id === parseInt(req.params.id));
+  if (!todo) return res.status(404).json({ message: 'Todo not found' });
+  res.status(200).json(todo);
+});
+
 // POST New – Create
 app.post('/todos', (req, res) => {
-  const newTodo = { id: todos.length + 1, ...req.body }; // Auto-ID
+  const { task } = req.body;
+  if (!task || !task.trim()) {
+    return res.status(400).json({ error: 'Task is required' });
+  }
+
+  const newTodo = { id: todos.length + 1, task, completed: false }; // Auto-ID
   todos.push(newTodo);
   res.status(201).json(newTodo); // Echo back
 });
