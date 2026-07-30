@@ -24,17 +24,23 @@ app.get('/todos', (req, res) => {
     res.json(todos);
 });
 
+// Bonus
+app.get('/todos/active', (req, res) => {
+    const activeTodos = todos.filter(todo => !todo.completed);
+    res.json(activeTodos);
+});
+
 // GET a single todo by ID
 app.get('/todos/:id', (req, res) => {
     const todo = todos.find(t => t.id === parseInt(req.params.id));
-    if (!todo) return res.status(404).send('Todo not found');
+    if (!todo) return res.status(404).json({ error: 'Todo not found' });
     res.json(todo);
 });
 
 // POST a new todo
 app.post('/todos', (req, res) => {
     const { task } = req.body;
-    if (!task) {
+    if (!task || !task.trim()) {
         return res.status(400).json({ error: 'Task is required' });
     }
 
@@ -73,12 +79,6 @@ app.delete('/todos/:id', (req, res) => {
 
     todos.splice(index, 1);
     res.json({message: 'Todo deleted successfully'});
-});
-
-// Bonus
-app.get('/todos/active', (req, res) => {
-    const activeTodos = todos.filter(todo => !todo.completed);
-    res.json(activeTodos);
 });
 
 app.listen(PORT, () => {
